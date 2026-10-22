@@ -1,0 +1,25 @@
+plugins {
+	id 'java-library'
+}
+
+repositories {
+	mavenCentral()
+}
+
+base {
+	archivesName = 'gentleui-core'
+}
+
+dependencies {
+	// Minecraft ships Gson at runtime; the core only needs it to compile its config codecs.
+	compileOnly 'com.google.code.gson:gson:2.11.0'
+
+	testImplementation 'com.google.code.gson:gson:2.11.0'
+	testImplementation platform('org.junit:junit-bom:5.11.4')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+	useJUnitPlatform()
+}

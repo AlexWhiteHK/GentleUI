@@ -1,0 +1,51 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap'
+}
+
+base {
+	archivesName = "gentleui-fabric-${project.minecraft_version}"
+}
+
+loom {
+	accessWidenerPath = file('src/main/resources/gentleui.accesswidener')
+
+	runs {
+		client {
+			// A roomier default window for development and screenshots.
+			programArgs '--width', '1280', '--height', '720'
+		}
+	}
+	mods {
+		gentleui {
+			sourceSet sourceSets.main
+			sourceSet project(':core').sourceSets.main
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	// Official Mojang names: identical to the unobfuscated names used from 26.1 onwards,
+	// which keeps this adapter source-compatible with future Minecraft lines.
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	implementation project(':core')
+}
+
+processResources {
+	def props = [version: project.version, minecraft_version: project.minecraft_version, loader_version: project.loader_version]
+	inputs.properties props
+	filesMatching('fabric.mod.json') {
+		expand props
+	}
+}
+
+jar {
+	// The core is shaded straight into the mod jar: it has no Minecraft references, so it needs no remapping.
+	from(project(':core').sourceSets.main.output)
+	from(rootProject.file('LICENSE')) {
+		rename { "${it}_gentleui" }
+	}
+}

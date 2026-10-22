@@ -1,0 +1,19 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
+}
+
+subprojects {
+	group = project.maven_group
+	version = project.mod_version
+
+	plugins.withType(JavaPlugin).configureEach {
+		java {
+			// The core targets Java 21 so the same bytecode runs on 1.21.x (Java 21) and 26.x (Java 25).
+			toolchain.languageVersion = JavaLanguageVersion.of(21)
+		}
+		tasks.withType(JavaCompile).configureEach {
+			options.encoding = 'UTF-8'
+			options.release = 21
+		}
+	}
+}

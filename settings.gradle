@@ -1,0 +1,20 @@
+pluginManagement {
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+rootProject.name = 'gentleui'
+
+// Platform-independent UI engine: animation, vector geometry, themes, screen logic.
+include 'core'
+
+// One adapter project per supported Minecraft line. Porting to a new version means adding a sibling
+// directory here; the core module is shared unchanged.
+include 'fabric-1.21.11'
+project(':fabric-1.21.11').projectDir = file('fabric/1.21.11')

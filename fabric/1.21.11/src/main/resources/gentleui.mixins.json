@@ -1,0 +1,20 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.alexwhitehk.gentleui.fabric.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"AbstractScrollAreaAccessor",
+		"AbstractSelectionListMixin",
+		"GuiGraphicsAccessor",
+		"GuiGraphicsMixin",
+		"GuiRenderStateMixin",
+		"GuiTextRenderStateAccessor",
+		"LevelLoadingScreenMixin",
+		"MinecraftMixin",
+		"ScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
