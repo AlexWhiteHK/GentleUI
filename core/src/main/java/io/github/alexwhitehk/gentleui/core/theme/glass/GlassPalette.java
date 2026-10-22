@@ -17,7 +17,7 @@ public final class GlassPalette {
 	private static final Map<String, GlassPalette> ALL = new LinkedHashMap<>();
 
 	public static final GlassPalette AURORA = add(new GlassPalette("aurora", false, 0xFF090E22, 0xFF130A2B,
-		new int[] {0xFF7B5CFF, 0xFF22D3EE, 0xFFF472B6, 0xFF3B82F6, 0xFFA78BFA}, 0xFFA5B4FF, 0xFFF5F7FF, 0xFFB4BCD6));
+		new int[] {0xFF7B5CFF, 0xFF22D3EE, 0xFFF472B6, 0xFF3B82F6, 0xFFA78BFA}, 0xFF7DD3FC, 0xFFF5F7FF, 0xFFB4BCD6));
 	public static final GlassPalette SUNSET = add(new GlassPalette("sunset", false, 0xFF160A1B, 0xFF2A0E1E,
 		new int[] {0xFFFB923C, 0xFFDB2777, 0xFF7C3AED, 0xFFFBBF24, 0xFFF43F5E}, 0xFFFDBA74, 0xFFFFF7F2, 0xFFD9B8C4));
 	public static final GlassPalette OCEAN = add(new GlassPalette("ocean", false, 0xFF031424, 0xFF042A3D,

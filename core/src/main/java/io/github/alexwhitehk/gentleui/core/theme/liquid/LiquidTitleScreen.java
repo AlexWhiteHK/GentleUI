@@ -15,6 +15,7 @@ import io.github.alexwhitehk.gentleui.core.render.Canvas;
 import io.github.alexwhitehk.gentleui.core.render.Icon;
 import io.github.alexwhitehk.gentleui.core.render.Paint;
 import io.github.alexwhitehk.gentleui.core.scene.TitleScreenBase;
+import io.github.alexwhitehk.gentleui.core.scene.elements.TitleElement;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -910,16 +911,58 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 		}
 	}
 
+	@Override
+	protected void addBuiltIns(List<TitleElement> out) {
+		super.addBuiltIns(out);
+		out.add(new HintElement());
+	}
+
+	/** The faint "drag from an edge" line on the idle lake, movable in the layout editor. */
+	private final class HintElement extends TitleElement {
+		HintElement() {
+			super("hint");
+		}
+
+		@Override
+		public String displayName(io.github.alexwhitehk.gentleui.core.host.Host h) {
+			return h.tr("gentleui.element.hint");
+		}
+
+		@Override
+		public float width(Canvas c) {
+			return c.textWidth(host.tr("gentleui.hint.drag")) + host.tr("gentleui.hint.drag").length() * 0.6f + 4f;
+		}
+
+		@Override
+		public float height(Canvas c) {
+			return c.fontHeight() + 2f;
+		}
+
+		@Override
+		public void defaultCenter(Canvas c, float sw, float sh, float[] o) {
+			o[0] = sw * 0.5f;
+			o[1] = sh - 52f + c.fontHeight() * 0.5f;
+		}
+
+		@Override
+		public void draw(Canvas c, io.github.alexwhitehk.gentleui.core.theme.Theme t, io.github.alexwhitehk.gentleui.core.host.Host h, float cx, float cy, float scale, float tm) {
+			float ha = editing ? 1f : hintAlpha.value();
+			if (ha <= 0.01f) {
+				return;
+			}
+			LiquidPalette p = lake.palette();
+			float pulse = editing ? 1f : 0.75f + 0.25f * MathUtil.sin(time() * 1.2f);
+			c.textTracked(host.tr("gentleui.hint.drag"), cx, cy - c.fontHeight() * scale * 0.5f, Argb.withAlpha(p.textMuted, 0.75f * ha * pulse), scale, 0.6f * scale, Align.CENTER);
+		}
+	}
+
 	private void drawHints(Canvas c) {
 		LiquidPalette p = lake.palette();
-		float ha = hintAlpha.value();
-		if (ha > 0.01f) {
-			float pulse = 0.75f + 0.25f * MathUtil.sin(time() * 1.2f);
-			c.textTracked(host.tr("gentleui.hint.drag"), width * 0.5f, height - 52f, Argb.withAlpha(p.textMuted, 0.75f * ha * pulse), 1f, 0.6f, Align.CENTER);
-		}
 		float ma = menuHintAlpha.value();
 		if (ma > 0.01f) {
-			c.text(host.tr("gentleui.hint.menu"), 8f, 8f, Argb.withAlpha(p.textMuted, 0.6f * ma), 1f, Align.LEFT, false);
+			int col = Argb.withAlpha(p.textMuted, 0.6f * ma);
+			c.text(host.tr("gentleui.hint.menu_back"), width - 8f, 8f, col, 1f, Align.RIGHT, false);
+			c.text(host.tr("gentleui.hint.menu_close"), width - 8f, 19f, col, 1f, Align.RIGHT, false);
 		}
 	}
 

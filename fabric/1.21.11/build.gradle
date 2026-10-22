@@ -23,6 +23,16 @@ loom {
 	}
 }
 
+repositories {
+	maven {
+		name = 'TerraformersMC'
+		url = 'https://maven.terraformersmc.com/releases/'
+		content {
+			includeGroup 'com.terraformersmc'
+		}
+	}
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	// Official Mojang names: identical to the unobfuscated names used from 26.1 onwards,
@@ -30,6 +40,10 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Optional integration: a "configure" button in Mod Menu. Present at runtime only in development.
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 	implementation project(':core')
 }

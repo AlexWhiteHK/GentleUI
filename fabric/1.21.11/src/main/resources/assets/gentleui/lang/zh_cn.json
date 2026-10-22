@@ -15,7 +15,6 @@
 	"gentleui.menu.credits": "制作人员",
 	"gentleui.menu.classic": "经典菜单",
 	"gentleui.hint.drag": "从任意边缘拖出菜单",
-	"gentleui.hint.menu": "Esc 返回  ·  点击水面收起",
 	"gentleui.element.version": "版本号",
 	"gentleui.element.type.text": "文字",
 	"gentleui.element.type.image": "图片",
@@ -108,5 +107,14 @@
 	"gentleui.anchor.bottom_left": "左下",
 	"gentleui.anchor.bottom": "下",
 	"gentleui.anchor.bottom_right": "右下",
-	"gentleui.pause.more": "更多选项"
+	"gentleui.pause.more": "更多选项",
+	"gentleui.element.greeting": "问候",
+	"gentleui.element.title": "标题",
+	"gentleui.element.actions": "主按钮",
+	"gentleui.element.icons": "图标栏",
+	"gentleui.element.continue": "继续游戏卡片",
+	"gentleui.element.dock": "Dock 栏",
+	"gentleui.element.hint": "操作提示",
+	"gentleui.hint.menu_back": "Esc 返回",
+	"gentleui.hint.menu_close": "点击水面收起"
 }

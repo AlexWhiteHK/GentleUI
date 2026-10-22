@@ -38,17 +38,19 @@ public final class MaterialTitleScreen extends WidgetTitleScreen {
 		float d = 0.08f;
 		float t = entrance ? 0.05f : -1f;
 
-		Greeting greeting = root.add(new Greeting());
+		Greeting greeting = element("greeting", "gentleui.element.greeting", root.add(new Greeting()));
 		greeting.bounds(x0, top, colW, 18f);
 		greeting.enterDelay = t;
 
-		Headline headline = root.add(new Headline());
+		Headline headline = element("headline", "gentleui.element.title", root.add(new Headline()));
 		headline.bounds(x0, top + 26f, colW + 60f, 40f);
 		headline.enterDelay = entrance ? t + d : -1f;
 
 		float by = top + 74f;
 		float bh = 22f;
 		float gap = 6f;
+		Widget actions = element("actions", "gentleui.element.actions", root.add(new Widget()));
+		actions.bounds(x0, by, colW, 3 * (bh + gap) - gap);
 		String[][] primary = {
 			{"menu.singleplayer", "cube", Actions.SINGLEPLAYER},
 			{"menu.multiplayer", "people", Actions.MULTIPLAYER},
@@ -57,7 +59,7 @@ public final class MaterialTitleScreen extends WidgetTitleScreen {
 		for (int i = 0; i < primary.length; i++) {
 			String[] p = primary[i];
 			String action = p[2];
-			Button b = root.add(new Button(() -> strip(host.tr(p[0])), () -> host.run(action)));
+			Button b = actions.add(new Button(() -> strip(host.tr(p[0])), () -> host.run(action)));
 			b.icon(Icon.byId(p[1])).style(i == 0 ? ButtonStyle.PRIMARY : ButtonStyle.TONAL);
 			b.bounds(x0, by + i * (bh + gap), colW, bh);
 			b.enabled = host.available(action);
@@ -67,6 +69,7 @@ public final class MaterialTitleScreen extends WidgetTitleScreen {
 			b.enterDelay = entrance ? t + d * (2 + i) : -1f;
 		}
 		float iy = by + primary.length * (bh + gap) + 8f;
+		Widget iconRow = element("icons", "gentleui.element.icons", root.add(new Widget()));
 		String[][] icons = {
 			{"gear", "menu.options", Actions.OPTIONS},
 			{"globe", "options.language", Actions.OPTIONS_LANGUAGE},
@@ -84,16 +87,17 @@ public final class MaterialTitleScreen extends WidgetTitleScreen {
 			if (Actions.MODS.equals(action) && !host.available(action)) {
 				continue;
 			}
-			IconButton ib = root.add(new IconButton(Icon.byId(ic[0]), strip(host.tr(ic[1])), () -> host.run(action)));
+			IconButton ib = iconRow.add(new IconButton(Icon.byId(ic[0]), strip(host.tr(ic[1])), () -> host.run(action)));
 			ib.style(Actions.QUIT.equals(action) ? ButtonStyle.DANGER : ButtonStyle.GHOST);
 			ib.bounds(ix, iy, isz, isz);
 			ib.enterDelay = entrance ? t + d * 5 + n * 0.03f : -1f;
 			ix += isz + 5f;
 			n++;
 		}
+		iconRow.bounds(x0, iy, Math.max(isz, ix - 5f - x0), isz);
 		float cardW = Math.min(180f, width * 0.36f);
 		if (width - (x0 + colW) > cardW + 30f) {
-			ContinueCard card = root.add(new ContinueCard());
+			ContinueCard card = element("continue", "gentleui.element.continue", root.add(new ContinueCard()));
 			float cx = Math.max(x0 + colW + 24f, width * 0.62f - cardW * 0.5f);
 			card.bounds(Math.min(cx, width - cardW - 16f), height * 0.5f - 6f, cardW, 70f);
 			card.enterDelay = entrance ? t + d * 4 : -1f;

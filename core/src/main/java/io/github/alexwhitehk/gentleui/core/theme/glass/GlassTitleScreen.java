@@ -47,8 +47,20 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 		out.add(new ClockElement());
 	}
 
+	private boolean builtWithWorlds;
+
+	@Override
+	protected void renderScene(Canvas c, float dt) {
+		// The world list loads in the background; add the "continue" dock item once it arrives.
+		if (builtWithWorlds == host.recentWorlds().isEmpty()) {
+			layout();
+		}
+		super.renderScene(c, dt);
+	}
+
 	@Override
 	protected void build(Widget root, boolean entrance) {
+		builtWithWorlds = !host.recentWorlds().isEmpty();
 		float cardW = Math.min(210f, width - 40f);
 		float bh = 24f;
 		float gap = 6f;
@@ -58,11 +70,11 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 		float total = titleH + cardH;
 		float top = Math.max(26f, (height - dockH - 20f - total) * 0.5f);
 
-		Title title = root.add(new Title());
+		Title title = element("headline", "gentleui.element.title", root.add(new Title()));
 		title.bounds(width * 0.5f - 120f, top, 240f, titleH);
 		title.enterDelay = entrance ? 0.05f : -1f;
 
-		Card card = root.add(new Card());
+		Card card = element("actions", "gentleui.element.actions", root.add(new Card()));
 		card.bounds(width * 0.5f - cardW * 0.5f, top + titleH, cardW, cardH);
 		card.enterDelay = entrance ? 0.14f : -1f;
 		String[][] primary = {
@@ -96,7 +108,7 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 		}
 		items.add(new DockItem("book", "gentleui.menu.credits", Actions.CREDITS));
 		items.add(new DockItem("power", "menu.quit", Actions.QUIT));
-		Dock dock = root.add(new Dock(items));
+		Dock dock = element("dock", "gentleui.element.dock", root.add(new Dock(items)));
 		float dw = items.size() * 26f + 16f;
 		dock.bounds(width * 0.5f - dw * 0.5f, height - dockH - 10f, dw, dockH);
 		dock.enterDelay = entrance ? 0.26f : -1f;
@@ -127,6 +139,9 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 		private final List<DockItem> items;
 		private final float[] scale;
 		private final float[] lift;
+		private final float[] drawnX;
+		private final float[] drawnHalf;
+		private boolean drawn;
 		private final Rect slab = new Rect();
 		private final Rect icon = new Rect();
 		private int pressed = -1;
@@ -135,6 +150,8 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 			this.items = items;
 			this.scale = new float[items.size()];
 			this.lift = new float[items.size()];
+			this.drawnX = new float[items.size()];
+			this.drawnHalf = new float[items.size()];
 		}
 
 		@Override
@@ -146,15 +163,18 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 			return bounds.x + 8f + 13f + i * 26f;
 		}
 
+		/** Hit test against where items were actually drawn, which differs from layout while magnified. */
 		private int indexAt(float x, float y) {
 			if (y < bounds.y - 14f || y > bounds.bottom()) {
 				return -1;
 			}
 			int best = -1;
-			float bestD = 14f;
+			float bestD = Float.MAX_VALUE;
 			for (int i = 0; i < items.size(); i++) {
-				float d = Math.abs(x - itemX(i));
-				if (d < bestD) {
+				float cx = drawn ? drawnX[i] : itemX(i);
+				float half = drawn ? drawnHalf[i] : 13f;
+				float d = Math.abs(x - cx);
+				if (d <= half && d < bestD) {
 					best = i;
 					bestD = d;
 				}
@@ -204,6 +224,8 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 				float cx = x + slot * 0.5f;
 				float cy = bounds.cy() - (s - 1f) * 9f;
 				icon.set(cx - size * 0.5f, cy - size * 0.5f, size, size);
+				drawnX[i] = cx;
+				drawnHalf[i] = slot * 0.5f;
 				boolean available = host.available(it.action());
 				c.pushAlpha(available ? 1f : 0.45f);
 				glass.glassSkin().glass(c, icon, size * 0.32f, lift[i], Actions.QUIT.equals(it.action()) ? Argb.withAlpha(0xFFFF4D6D, 0.25f * lift[i]) : 0, 0.2f + 0.6f * lift[i]);
@@ -224,6 +246,7 @@ public final class GlassTitleScreen extends WidgetTitleScreen {
 				}
 				x += slot;
 			}
+			drawn = true;
 		}
 	}
 

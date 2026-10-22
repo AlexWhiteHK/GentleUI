@@ -877,8 +877,10 @@ public abstract class Canvas {
 		if (r <= 0f || (c >>> 24) == 0) {
 			return;
 		}
-		int rings = 7;
-		int n = Math.max(16, Math.min(96, segmentsFor(r, MathUtil.TAU) / 2));
+		float rPx = r * xf.scaleFactor() / pixel();
+		// Small glows (motes, sparkles) need far fewer rings and segments to look identical.
+		int rings = rPx < 24f ? 3 : (rPx < 80f ? 5 : 7);
+		int n = Math.max(rPx < 24f ? 10 : 16, Math.min(96, segmentsFor(r, MathUtil.TAU) / 2));
 		float[] cosT = trigCos(n);
 		float[] sinT = trigSin(n);
 		float fcx = xf.tx(cx, cy);

@@ -19,6 +19,8 @@ public class Label extends Widget {
 	public Align align = Align.LEFT;
 	public Tone tone = Tone.NORMAL;
 	public boolean wrap;
+	/** Horizontal inset so labels line up with the content of neighbouring controls. */
+	public float indent = 8f;
 
 	public Label(String text) {
 		this.text = () -> text;
@@ -62,7 +64,7 @@ public class Label extends Widget {
 		if (!wrap) {
 			return lh;
 		}
-		return WidgetRoot.wrap(c, text.get(), bounds.w / scale).size() * lh;
+		return WidgetRoot.wrap(c, text.get(), (bounds.w - indent * 2f) / scale).size() * lh;
 	}
 
 	@Override
@@ -73,13 +75,14 @@ public class Label extends Widget {
 			case ACCENT -> ctx.palette().accent;
 			default -> ctx.palette().text;
 		};
-		float ax = bounds.x + bounds.w * align.factor;
+		float ax = align == Align.LEFT ? bounds.x + indent : (align == Align.RIGHT ? bounds.right() - indent : bounds.cx());
+		float avail = bounds.w - indent * 2f;
 		if (!wrap) {
 			float y = bounds.y + (bounds.h - c.fontHeight() * scale) * 0.5f;
-			c.text(c.ellipsize(text.get(), bounds.w, scale), ax, y, color, scale, align, false);
+			c.text(c.ellipsize(text.get(), avail, scale), ax, y, color, scale, align, false);
 			return;
 		}
-		List<String> lines = WidgetRoot.wrap(c, text.get(), bounds.w / scale);
+		List<String> lines = WidgetRoot.wrap(c, text.get(), avail / scale);
 		float lh = (c.fontHeight() + 2f) * scale;
 		for (int i = 0; i < lines.size(); i++) {
 			c.text(lines.get(i), ax, bounds.y + i * lh, color, scale, align, false);

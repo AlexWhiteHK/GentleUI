@@ -15,7 +15,6 @@
 	"gentleui.menu.credits": "Credits",
 	"gentleui.menu.classic": "Classic Menu",
 	"gentleui.hint.drag": "Drag from any edge to open a menu",
-	"gentleui.hint.menu": "Esc to go back  ·  Click the water to close",
 	"gentleui.element.version": "Version",
 	"gentleui.element.type.text": "Text",
 	"gentleui.element.type.image": "Image",
@@ -108,5 +107,14 @@
 	"gentleui.anchor.bottom_left": "Bottom left",
 	"gentleui.anchor.bottom": "Bottom",
 	"gentleui.anchor.bottom_right": "Bottom right",
-	"gentleui.pause.more": "More options"
+	"gentleui.pause.more": "More options",
+	"gentleui.element.greeting": "Greeting",
+	"gentleui.element.title": "Title",
+	"gentleui.element.actions": "Main buttons",
+	"gentleui.element.icons": "Icon row",
+	"gentleui.element.continue": "Continue card",
+	"gentleui.element.dock": "Dock",
+	"gentleui.element.hint": "Hint",
+	"gentleui.hint.menu_back": "Esc to go back",
+	"gentleui.hint.menu_close": "Click the water to close"
 }

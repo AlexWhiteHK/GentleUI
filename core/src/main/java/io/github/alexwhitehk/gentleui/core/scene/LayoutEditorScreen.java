@@ -21,7 +21,6 @@ import io.github.alexwhitehk.gentleui.core.theme.PanelStyle;
 import io.github.alexwhitehk.gentleui.core.theme.Theme;
 import io.github.alexwhitehk.gentleui.core.theme.Themes;
 import io.github.alexwhitehk.gentleui.core.ui.Button;
-import io.github.alexwhitehk.gentleui.core.ui.Choice;
 import io.github.alexwhitehk.gentleui.core.ui.IconButton;
 import io.github.alexwhitehk.gentleui.core.ui.Label;
 import io.github.alexwhitehk.gentleui.core.ui.ScrollPanel;
@@ -59,6 +58,9 @@ public final class LayoutEditorScreen extends UiScreen {
 	private Float guideX;
 	private Float guideY;
 	private float time;
+	private final io.github.alexwhitehk.gentleui.core.anim.Spring toolbarY = new io.github.alexwhitehk.gentleui.core.anim.Spring(6f, 160f, 0.9f);
+	private boolean toolbarBottom;
+	private boolean panelLeft;
 
 	private LayoutConfig layoutConfig() {
 		return ConfigStore.config().layout(Themes.active().id());
@@ -93,8 +95,10 @@ public final class LayoutEditorScreen extends UiScreen {
 	private void rebuild() {
 		Widget root = ui.root;
 		root.clear();
-		float tw = Math.min(width - 16f, 300f);
-		toolbar.set((width - tw) * 0.5f, 6f, tw, 26f);
+		float tw = Math.min(width - 16f, 6f + 6 * 21f + 6f + 62f + 6f);
+		float ty = toolbarBottom ? height - 32f : 6f;
+		toolbarY.target(ty);
+		toolbar.set((width - tw) * 0.5f, ty, tw, 26f);
 		String[][] adds = {
 			{"text", CustomElement.TEXT},
 			{"image", CustomElement.IMAGE},
@@ -119,7 +123,10 @@ public final class LayoutEditorScreen extends UiScreen {
 
 		if (selected != null) {
 			float pw = Math.min(150f, width * 0.36f);
-			panel.set(width - pw - 8f, toolbar.bottom() + 8f, pw, Math.min(height - toolbar.bottom() - 16f, 230f));
+			panelLeft = selected.bounds.cx() > width * 0.6f;
+			float py = toolbarBottom ? 8f : toolbar.bottom() + 8f;
+			float ph = Math.min(height - 16f - (toolbar.h + 8f), 230f);
+			panel.set(panelLeft ? 8f : width - pw - 8f, py, pw, ph);
 			ScrollPanel props = root.add(new ScrollPanel());
 			props.bounds(panel.x, panel.y + 18f, panel.w, panel.h - 22f);
 			fillProperties(props);
@@ -151,13 +158,8 @@ public final class LayoutEditorScreen extends UiScreen {
 			if (!CustomElement.IMAGE.equals(m.type)) {
 				field(p, "gentleui.editor.color", m.color, v -> m.color = v);
 			}
-			List<String> anchors = new ArrayList<>();
-			for (Anchor a : Anchor.values()) {
-				anchors.add(host.tr("gentleui.anchor." + a.id));
-			}
-			Choice anchor = p.add(new Choice(() -> host.tr("gentleui.editor.anchor"), List.of("↖", "↑", "↗", "←", "·", "→", "↙", "↓", "↘"),
+			p.add(new io.github.alexwhitehk.gentleui.core.ui.AnchorPicker(() -> host.tr("gentleui.editor.anchor"),
 				() -> Anchor.byId(m.anchor).ordinal(), i -> reanchor(view, Anchor.values()[i])));
-			anchor.tooltip = String.join(" / ", anchors);
 			p.add(new Slider(() -> host.tr("gentleui.editor.scale"), 0.25f, 4f, 0.05f, () -> m.scale, v -> touch(() -> m.scale = v), v -> Math.round(v * 100f) + "%"));
 			p.add(new Slider(() -> host.tr("gentleui.editor.opacity"), 0.05f, 1f, 0.05f, () -> m.opacity, v -> touch(() -> m.opacity = v), v -> Math.round(v * 100f) + "%"));
 			p.add(new Slider(() -> host.tr("gentleui.editor.rotation"), -180f, 180f, 1f, () -> m.rotation, v -> touch(() -> m.rotation = v), v -> Math.round(v) + "°"));
@@ -307,7 +309,7 @@ public final class LayoutEditorScreen extends UiScreen {
 		int accent = p.accent;
 		c.strokeRoundRect(2f, 2f, width - 4f, height - 4f, 10f, 1.5f, Argb.withAlpha(accent, 0.5f + 0.15f * MathUtil.sin(time * 2f)));
 		hovered = dragging || resizing ? hovered : preview.elementAt(mouseX, mouseY);
-		if (ui.ctx.hovered != null || toolbar.contains(mouseX, mouseY) || selected != null && panel.contains(mouseX, mouseY)) {
+		if (ui.ctx.hovered != null || selected != null && panel.contains(mouseX, mouseY)) {
 			hovered = dragging || resizing ? hovered : null;
 		}
 		for (TitleElement e : preview.elements()) {
@@ -335,13 +337,19 @@ public final class LayoutEditorScreen extends UiScreen {
 		if (guideY != null) {
 			c.line(0f, guideY, width, guideY, c.pixel() * 1.2f, Argb.withAlpha(accent, 0.8f), Canvas.Cap.BUTT);
 		}
+		boolean wantBottom = selected != null && selected.bounds.y < 40f;
+		if (wantBottom != toolbarBottom && !dragging && !resizing) {
+			toolbarBottom = wantBottom;
+			rebuild();
+		}
+		toolbarY.update(dt);
 		theme.skin().panel(c, toolbar, PanelStyle.POPOVER);
 		if (selected != null) {
 			theme.skin().panel(c, panel, PanelStyle.CARD);
 			c.text(c.ellipsize(selected.displayName(host), panel.w - 12f, 1f), panel.x + 8f, panel.y + 6f, p.text, 1f, Align.LEFT, false);
 		} else {
 			String hint = host.tr("gentleui.editor.hint");
-			c.text(hint, width * 0.5f, height - 14f, Argb.withAlpha(p.textMuted, 0.9f), 1f, Align.CENTER, false);
+			c.text(hint, width * 0.5f, toolbarBottom ? 40f : height - 14f, Argb.withAlpha(p.textMuted, 0.9f), 1f, Align.CENTER, false);
 		}
 		ui.render(c, theme, host, mouseX, mouseY, dt, time);
 	}
@@ -363,7 +371,7 @@ public final class LayoutEditorScreen extends UiScreen {
 		if (ui.mouseDown(x, y, button)) {
 			return true;
 		}
-		if (toolbar.contains(x, y) || selected != null && panel.contains(x, y)) {
+		if (selected != null && panel.contains(x, y)) {
 			return true;
 		}
 		if (overHandle(x, y)) {

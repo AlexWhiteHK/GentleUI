@@ -20,6 +20,8 @@ public final class GlassSkin implements Skin {
 	private final Paint fill = new Paint();
 	private final Paint rim = new Paint();
 	private final Rect tmp = new Rect();
+	private final float[] spec = new float[6];
+	private final int[] specColors = new int[3];
 
 	public GlassSkin() {
 		apply(GlassPalette.AURORA, 0.55f);
@@ -88,7 +90,18 @@ public final class GlassSkin implements Skin {
 		// Specular line just inside the top edge.
 		float inset = Math.max(radius, 6f);
 		if (r.w > inset * 2f + 4f) {
-			c.line(r.x + inset, r.y + 1.4f, r.right() - inset, r.y + 1.4f, c.pixel() * 1.2f, Argb.withAlpha(0xFFFFFFFF, (light ? 0.9f : 0.35f) + 0.2f * lift), Canvas.Cap.ROUND);
+			int hi = Argb.withAlpha(0xFFFFFFFF, (light ? 0.7f : 0.22f) + 0.18f * lift);
+			int lo = Argb.withAlpha(0xFFFFFFFF, 0f);
+			spec[0] = r.x + inset;
+			spec[1] = r.y + 1.3f;
+			spec[2] = r.cx();
+			spec[3] = r.y + 1.3f;
+			spec[4] = r.right() - inset;
+			spec[5] = r.y + 1.3f;
+			specColors[0] = lo;
+			specColors[1] = hi;
+			specColors[2] = lo;
+			c.strokePolyline(spec, specColors, 3, false, c.pixel() * 1.2f, Canvas.Cap.BUTT);
 		}
 	}
 
@@ -99,7 +112,7 @@ public final class GlassSkin implements Skin {
 			return;
 		}
 		int tint = switch (style) {
-			case PRIMARY -> Argb.withAlpha(gp.accent, gp.light ? 0.55f : 0.35f);
+			case PRIMARY -> Argb.withAlpha(gp.accent, gp.light ? 0.75f : 0.6f);
 			case DANGER -> Argb.withAlpha(0xFFFF4D6D, 0.3f);
 			default -> s.active > 0.5f ? Argb.withAlpha(gp.accent, 0.25f) : 0;
 		};

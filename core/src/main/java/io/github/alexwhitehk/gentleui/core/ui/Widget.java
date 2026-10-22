@@ -21,6 +21,11 @@ public class Widget {
 	public boolean visible = true;
 	public boolean enabled = true;
 	public String tooltip;
+	/** User placement applied on top of layout (layout editor): offset, uniform scale around the center, opacity. */
+	public float userDx;
+	public float userDy;
+	public float userScale = 1f;
+	public float userOpacity = 1f;
 	/** Screen time (seconds) at which this widget starts its entrance animation; negative disables it. */
 	public float enterDelay = -1f;
 	/** Preferred height used by layout containers; 0 means "use the current bounds". */
@@ -129,6 +134,11 @@ public class Widget {
 		if (!visible) {
 			return null;
 		}
+		if (hasUserTransform()) {
+			// Undo the user transform so children are tested in layout space.
+			x = (x - userDx - bounds.cx()) / userScale + bounds.cx();
+			y = (y - userDy - bounds.cy()) / userScale + bounds.cy();
+		}
 		boolean inside = bounds.contains(x, y);
 		if (!inside && clipsChildren()) {
 			return null;
@@ -179,10 +189,29 @@ public class Widget {
 		state.ripple = 0.001f;
 	}
 
+	private boolean hasUserTransform() {
+		return userDx != 0f || userDy != 0f || userScale != 1f;
+	}
+
 	public void render(UiContext ctx) {
 		if (!visible) {
 			return;
 		}
+		boolean user = hasUserTransform() || userOpacity < 1f;
+		if (user) {
+			ctx.canvas.pushAlpha(userOpacity);
+			ctx.canvas.push();
+			ctx.canvas.translate(userDx, userDy);
+			ctx.canvas.scaleAround(bounds.cx(), bounds.cy(), userScale);
+		}
+		renderInner(ctx);
+		if (user) {
+			ctx.canvas.pop();
+			ctx.canvas.popAlpha();
+		}
+	}
+
+	private void renderInner(UiContext ctx) {
 		float enter = 1f;
 		if (enterDelay >= 0f) {
 			enter = io.github.alexwhitehk.gentleui.core.math.Easing.EMPHASIZED.apply(MathUtil.clamp01((ctx.time - enterDelay) / 0.45f));

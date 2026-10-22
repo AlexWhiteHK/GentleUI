@@ -12,7 +12,8 @@
 	"icon": "assets/gentleui/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["io.github.alexwhitehk.gentleui.fabric.GentleUIClient"]
+		"client": ["io.github.alexwhitehk.gentleui.fabric.GentleUIClient"],
+		"modmenu": ["io.github.alexwhitehk.gentleui.fabric.compat.ModMenuIntegration"]
 	},
 	"mixins": [
 		{

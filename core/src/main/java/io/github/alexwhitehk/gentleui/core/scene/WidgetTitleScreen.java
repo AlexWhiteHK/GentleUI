@@ -1,6 +1,10 @@
 package io.github.alexwhitehk.gentleui.core.scene;
 
 import io.github.alexwhitehk.gentleui.core.render.Canvas;
+import io.github.alexwhitehk.gentleui.core.scene.elements.TitleElement;
+import io.github.alexwhitehk.gentleui.core.scene.elements.WidgetElement;
+import java.util.ArrayList;
+import java.util.List;
 import io.github.alexwhitehk.gentleui.core.theme.Theme;
 import io.github.alexwhitehk.gentleui.core.ui.Widget;
 import io.github.alexwhitehk.gentleui.core.ui.WidgetRoot;
@@ -9,6 +13,7 @@ import io.github.alexwhitehk.gentleui.core.ui.WidgetRoot;
 public abstract class WidgetTitleScreen extends TitleScreenBase {
 	protected final WidgetRoot ui = new WidgetRoot();
 	private boolean built;
+	private final List<WidgetElement> widgetElements = new ArrayList<>();
 
 	protected WidgetTitleScreen(Theme theme) {
 		super(theme);
@@ -21,9 +26,23 @@ public abstract class WidgetTitleScreen extends TitleScreenBase {
 	protected void layout() {
 		super.layout();
 		ui.root.clear();
+		widgetElements.clear();
 		build(ui.root, !built);
 		built = true;
 		ui.layout(width, height);
+	}
+
+	/** Registers a top-level widget group as a movable title element. */
+	protected <T extends Widget> T element(String id, String nameKey, T widget) {
+		widgetElements.add(new WidgetElement(id, nameKey, widget));
+		return widget;
+	}
+
+	@Override
+	public List<TitleElement> elements() {
+		List<TitleElement> all = new ArrayList<>(widgetElements);
+		all.addAll(super.elements());
+		return all;
 	}
 
 	/** Background plus anything drawn behind the widgets. */
@@ -34,6 +53,7 @@ public abstract class WidgetTitleScreen extends TitleScreenBase {
 	@Override
 	protected void renderScene(Canvas c, float dt) {
 		drawScenery(c, dt);
+		placeElements(c);
 		if (!editing) {
 			ui.render(c, theme, host, mouseX, mouseY, dt, time());
 		} else {

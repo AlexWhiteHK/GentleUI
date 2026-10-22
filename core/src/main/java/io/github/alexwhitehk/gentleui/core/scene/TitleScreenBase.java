@@ -115,12 +115,34 @@ public abstract class TitleScreenBase extends UiScreen {
 		theme.background(c, backdrop);
 	}
 
+	/** Applies placement to every element; widget-backed elements must be placed before the widgets render. */
+	protected void placeElements(Canvas c) {
+		LayoutConfig layout = layoutConfig();
+		for (TitleElement e : elements()) {
+			if (e instanceof io.github.alexwhitehk.gentleui.core.scene.elements.WidgetElement we) {
+				we.editingHint = editing;
+				we.place(c, width, height, layout.overrideOrNull(e.id), tmp);
+			}
+		}
+	}
+
 	protected void renderElements(Canvas c, float dt) {
 		LayoutConfig layout = layoutConfig();
 		for (TitleElement e : elements()) {
+			if (e instanceof io.github.alexwhitehk.gentleui.core.scene.elements.WidgetElement) {
+				continue;
+			}
 			LayoutConfig.ElementOverride o = e.custom() ? null : layout.overrideOrNull(e.id);
 			float scale = e.place(c, width, height, o, tmp);
 			if (scale <= 0f) {
+				if (!editing) {
+					continue;
+				}
+				// Hidden elements stay faintly visible while editing so they can be found and restored.
+				scale = o != null && o.scale > 0f ? o.scale : 1f;
+				c.pushAlpha(0.25f);
+				e.draw(c, theme, host, e.bounds.cx(), e.bounds.cy(), scale, time);
+				c.popAlpha();
 				continue;
 			}
 			boolean hot = !editing && e.clickable() && e.bounds.contains(mouseX, mouseY);

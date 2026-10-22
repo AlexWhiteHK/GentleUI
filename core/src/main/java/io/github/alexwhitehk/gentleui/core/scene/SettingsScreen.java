@@ -329,13 +329,26 @@ public final class SettingsScreen extends UiScreen {
 		backdrop.calm = 0.7f;
 		backdrop.pointerActive = cfg().pointerEffects;
 		theme.background(c, backdrop);
+		// The sheet rises and fades in when the screen opens.
+		float enter = io.github.alexwhitehk.gentleui.core.math.Easing.EMPHASIZED.apply(Math.min(1f, time / 0.4f));
+		c.pushAlpha(enter);
+		c.push();
+		c.translate(0f, (1f - enter) * 12f);
 		theme.skin().panel(c, sheet, PanelStyle.SHEET);
 		Icon.SLIDERS.draw(c, sheet.x + 18f, sheet.y + 17f, 12f, theme.palette().accent, 2.2f);
 		c.text("GentleUI", sheet.x + 30f, sheet.y + 13f, theme.palette().text, 1f, Align.LEFT, false);
 		c.text(host.tr(section.key), sheet.x + 30f + c.textWidth("GentleUI") + 8f, sheet.y + 13f, theme.palette().textMuted, 1f, Align.LEFT, false);
 		theme.skin().separator(c, sheet.x + 8f, sheet.y + 30f, sheet.w - 16f);
 		contentIn.update(dt);
+		// Switching sections cross-fades only the content column.
+		float content = MathUtil.clamp01(contentIn.value());
+		if (this.content != null) {
+			this.content.userOpacity = content;
+			this.content.userDy = (1f - content) * 6f;
+		}
 		ui.render(c, theme, host, mouseX, mouseY, dt, time);
+		c.pop();
+		c.popAlpha();
 	}
 
 	@Override
