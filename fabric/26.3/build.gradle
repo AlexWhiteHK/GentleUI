@@ -1,0 +1,52 @@
+plugins {
+	// Minecraft 26.x ships unobfuscated, so this adapter compiles against official names with no remapping.
+	id 'net.fabricmc.fabric-loom'
+}
+
+base {
+	archivesName = "gentleui-fabric-${project.minecraft_version}"
+}
+
+loom {
+	accessWidenerPath = file('src/main/resources/gentleui.accesswidener')
+
+	runs {
+		client {
+			programArgs '--width', '1280', '--height', '720'
+		}
+	}
+	mods {
+		gentleui {
+			sourceSet sourceSets.main
+			sourceSet project(':core').sourceSets.main
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	implementation project(':core')
+}
+
+tasks.withType(JavaCompile).configureEach {
+	// Minecraft 26.x classes are Java 25 bytecode.
+	options.release = 25
+}
+
+processResources {
+	def props = [version: project.version, minecraft_version: project.minecraft_version, loader_version: project.loader_version]
+	inputs.properties props
+	filesMatching('fabric.mod.json') {
+		expand props
+	}
+}
+
+jar {
+	from(project(':core').sourceSets.main.output)
+	from(rootProject.file('LICENSE')) {
+		rename { "${it}_gentleui" }
+	}
+}

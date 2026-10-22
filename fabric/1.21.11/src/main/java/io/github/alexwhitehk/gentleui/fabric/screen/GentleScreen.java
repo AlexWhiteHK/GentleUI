@@ -1,6 +1,7 @@
 package io.github.alexwhitehk.gentleui.fabric.screen;
 
 import io.github.alexwhitehk.gentleui.core.scene.UiScreen;
+import io.github.alexwhitehk.gentleui.fabric.InputMap;
 import io.github.alexwhitehk.gentleui.fabric.McHost;
 import io.github.alexwhitehk.gentleui.fabric.render.McCanvas;
 import net.minecraft.client.gui.GuiGraphics;
@@ -85,17 +86,17 @@ public class GentleScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		return ui.mouseDown((float) event.x(), (float) event.y(), event.button(), event.modifiers());
+		return ui.mouseDown((float) event.x(), (float) event.y(), InputMap.button(event.button()), InputMap.mods(event.modifiers()));
 	}
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		return ui.mouseUp((float) event.x(), (float) event.y(), event.button(), event.modifiers());
+		return ui.mouseUp((float) event.x(), (float) event.y(), InputMap.button(event.button()), InputMap.mods(event.modifiers()));
 	}
 
 	@Override
 	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-		return ui.mouseDragged((float) event.x(), (float) event.y(), event.button(), (float) dx, (float) dy);
+		return ui.mouseDragged((float) event.x(), (float) event.y(), InputMap.button(event.button()), (float) dx, (float) dy);
 	}
 
 	@Override
@@ -105,12 +106,12 @@ public class GentleScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(KeyEvent event) {
-		return ui.keyDown(event.key(), event.scancode(), event.modifiers());
+		return ui.keyDown(InputMap.key(event.key()), event.scancode(), InputMap.mods(event.modifiers()));
 	}
 
 	@Override
 	public boolean keyReleased(KeyEvent event) {
-		return ui.keyUp(event.key(), event.scancode(), event.modifiers());
+		return ui.keyUp(InputMap.key(event.key()), event.scancode(), InputMap.mods(event.modifiers()));
 	}
 
 	@Override

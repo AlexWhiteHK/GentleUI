@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "gentleui",
+	"version": "${version}",
+	"name": "GentleUI",
+	"description": "A modern, animated interface for Minecraft's menus. Three themes: Liquid (default), Material and Glass.",
+	"authors": ["AlexWhiteHK"],
+	"contact": {
+		"sources": "https://github.com/AlexWhiteHK/GentleUI"
+	},
+	"license": "MIT",
+	"icon": "assets/gentleui/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["io.github.alexwhitehk.gentleui.fabric.GentleUIClient"]
+	},
+	"mixins": [
+		{
+			"config": "gentleui.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "gentleui.accesswidener",
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=25"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

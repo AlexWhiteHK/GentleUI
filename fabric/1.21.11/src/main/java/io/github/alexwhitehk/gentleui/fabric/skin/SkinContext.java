@@ -23,7 +23,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Per-frame state of the vanilla skin: which screen is being drawn, whether it is restyled, and the progress of
@@ -106,8 +105,7 @@ public final class SkinContext {
 			slide = 0f;
 		}
 		if (active) {
-			long window = Minecraft.getInstance().getWindow().handle();
-			boolean down = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+			boolean down = Minecraft.getInstance().mouseHandler.isLeftPressed();
 			if (down && !pointerWasDown) {
 				theme().pointerPressed(mouseX(), mouseY());
 			}

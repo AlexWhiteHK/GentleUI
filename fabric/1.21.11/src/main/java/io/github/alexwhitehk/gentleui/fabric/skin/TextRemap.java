@@ -18,16 +18,18 @@ public final class TextRemap {
 		if (!SkinContext.active() || !ConfigStore.config().adaptText) {
 			return s;
 		}
+		GuiTextRenderStateAccessor a = (GuiTextRenderStateAccessor) (Object) s;
 		Palette p = SkinContext.theme().palette();
 		float fade = SkinContext.contentAlpha();
-		int color = p.light ? TextColors.remap(s.color, p) : s.color;
+		int original = a.gentleui$color();
+		int color = p.light ? TextColors.remap(original, p) : original;
 		color = TextColors.fade(color, fade);
-		FormattedCharSequence text = p.light ? recolor(s.text, p) : s.text;
-		if (color == s.color && !s.dropShadow && text == s.text) {
+		FormattedCharSequence text = p.light ? recolor(a.gentleui$text(), p) : a.gentleui$text();
+		if (color == original && !a.gentleui$dropShadow() && text == a.gentleui$text()) {
 			return s;
 		}
-		boolean includeEmpty = ((GuiTextRenderStateAccessor) (Object) s).gentleui$includeEmpty();
-		return new GuiTextRenderState(s.font, text, s.pose, s.x, s.y, color, s.backgroundColor, false, includeEmpty, s.scissor);
+		return new GuiTextRenderState(a.gentleui$font(), text, s.pose, a.gentleui$x(), a.gentleui$y(), color, a.gentleui$backgroundColor(), false,
+			a.gentleui$includeEmpty(), s.scissor);
 	}
 
 	/** Re-maps explicit style colors (formatting codes, colored components) inside the text. */

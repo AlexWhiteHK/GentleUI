@@ -1,0 +1,3 @@
+accessWidener v2 official
+# Lets the selection list mixin name the protected entry type in its injector signatures.
+accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry

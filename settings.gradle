@@ -18,3 +18,5 @@ include 'core'
 // directory here; the core module is shared unchanged.
 include 'fabric-1.21.11'
 project(':fabric-1.21.11').projectDir = file('fabric/1.21.11')
+include 'fabric-26.3'
+project(':fabric-26.3').projectDir = file('fabric/26.3')
