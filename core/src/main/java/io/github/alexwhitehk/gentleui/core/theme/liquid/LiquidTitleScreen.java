@@ -79,6 +79,8 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 	private float menuOpenTime;
 	private final Spring hintAlpha = new Spring(0f, 40f, 1f);
 	private final Spring menuHintAlpha = new Spring(0f, 60f, 1f);
+	/** The canvas of the last frame, used to measure labels when a ring opens between frames. */
+	private Canvas measure;
 
 	public LiquidTitleScreen(LiquidTheme theme) {
 		super(theme);
@@ -142,6 +144,7 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 
 	@Override
 	protected void renderScene(Canvas c, float dt) {
+		measure = c;
 		float adt = Motion.scale(dt);
 		updateMenu(dt, adt);
 		for (Bubble b : bubbles) {
@@ -200,6 +203,14 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 		return openPath.size();
 	}
 
+	/** The layout scale at which rings up to {@code ring} fit the window. */
+	private float fitScale(int ring) {
+		float maxR = RING_RADIUS[Math.min(Math.max(1, ring), RING_RADIUS.length - 1)];
+		float need = (maxR + BUBBLE_RADIUS[Math.min(ring, BUBBLE_RADIUS.length - 1)] + 22f) * 2f;
+		float fit = Math.min(1f, Math.min((width - 16f) / need, (height - 16f) / need));
+		return MathUtil.clamp(fit, 0.55f, 1f);
+	}
+
 	private void openMenu(Edge edge, float fromX, float fromY) {
 		Handle h = handles.get(edge);
 		if (h == null) {
@@ -240,6 +251,8 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 		} else {
 			center = parent.angle;
 			step = Math.max((float) Math.toRadians(24), (2f * br + 16f) / rr);
+			// Rings shrink on small windows but labels do not, so measure against the radius the ring will settle at.
+			step = fitLabels(kids, center, step, rr * fitScale(ring));
 			if (step * n > MathUtil.TAU) {
 				step = MathUtil.TAU / n;
 			}
@@ -261,6 +274,43 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 		keyboardIndex = -1;
 	}
 
+	/**
+	 * Widens a fan until neighbours whose labels both sit above (or both below) their bubbles leave room for the
+	 * text. Mirrors the placement rule in {@link #drawLabels}: labels are centered when the bubble is within
+	 * about 65 degrees of vertical as seen from the root.
+	 */
+	private float fitLabels(List<MenuNode> kids, float center, float step, float rr) {
+		int n = kids.size();
+		if (measure == null || n < 2 || !cfg().labels) {
+			return step;
+		}
+		float[] w = new float[n];
+		for (int i = 0; i < n; i++) {
+			w[i] = measure.textWidth(label(kids.get(i)));
+		}
+		float max = Math.min((float) Math.toRadians(64), MathUtil.TAU / n);
+		while (step < max && !labelsFit(w, center, step, rr)) {
+			step += (float) Math.toRadians(1);
+		}
+		return step;
+	}
+
+	private static boolean labelsFit(float[] w, float center, float step, float rr) {
+		int n = w.length;
+		for (int i = 0; i + 1 < n; i++) {
+			float a0 = center + (i - (n - 1) * 0.5f) * step;
+			float a1 = a0 + step;
+			float c0 = MathUtil.cos(a0);
+			float c1 = MathUtil.cos(a1);
+			boolean stacked = Math.abs(c0) <= 0.42f && Math.abs(c1) <= 0.42f
+					&& MathUtil.sin(a0) < 0f == MathUtil.sin(a1) < 0f;
+			if (stacked && rr * Math.abs(c1 - c0) < (w[i] + w[i + 1]) * 0.5f + 10f) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/** Collapses every ring deeper than {@code ring}. */
 	private void collapseFrom(int ring) {
 		for (Bubble b : bubbles) {
@@ -268,7 +318,8 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 				b.die();
 			}
 		}
-		while (openPath.size() > ring + 1) {
+		// openPath holds the branch whose children form each ring, so ring k stays visible with k entries.
+		while (openPath.size() > ring) {
 			openPath.remove(openPath.size() - 1);
 		}
 		for (int k = ring + 1; k < ringGuides.length; k++) {
@@ -330,7 +381,7 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 			return;
 		}
 		if (b.node.isBranch()) {
-			collapseFrom(b.ring - 1);
+			collapseFrom(b.ring);
 			openPath.add(b);
 			openRing(b);
 			lake.ripple(b.x, b.y, 0.7f * cfg().rippleStrength);
@@ -355,10 +406,7 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 
 	private void updateMenu(float dt, float adt) {
 		// Fit the composition: scale it down on small windows, then keep it centered on screen.
-		float maxR = ringRadius(Math.max(1, outermostRing())) / Math.max(0.01f, layoutScale.value());
-		float need = (maxR + BUBBLE_RADIUS[Math.min(outermostRing(), BUBBLE_RADIUS.length - 1)] + 22f) * 2f;
-		float fit = Math.min(1f, Math.min((width - 16f) / need, (height - 16f) / need));
-		layoutScale.target(MathUtil.clamp(fit, 0.55f, 1f)).update(adt);
+		layoutScale.target(fitScale(outermostRing())).update(adt);
 
 		if (root != null) {
 			float[] box = compositionBounds();
@@ -411,8 +459,9 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 			b.selected.target(inPath && b != root ? 1f : 0f);
 			float labelOn = b.ring == outermostRing() || b == hovered ? 1f : 0f;
 			if (b == root) {
-				// A full ring leaves no room under the root; its icon speaks for itself until hovered.
-				labelOn = b == hovered || ringBubbles(1).size() <= 4 ? 1f : 0f;
+				// A full ring, or a deeper ring growing past it, leaves no room by the root; its icon speaks for
+				// itself until hovered.
+				labelOn = b == hovered || outermostRing() == 1 && ringBubbles(1).size() <= 4 ? 1f : 0f;
 			}
 			if (b.dying || launching != null && b != launching) {
 				labelOn = 0f;
@@ -608,7 +657,7 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 			return;
 		}
 		if (outermostRing() > 1) {
-			collapseFrom(outermostRing() - 2);
+			collapseFrom(outermostRing() - 1);
 			host.playSound(UiSound.CLOSE);
 		} else {
 			closeMenu();
