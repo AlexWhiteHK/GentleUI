@@ -44,8 +44,14 @@
 | `AbstractSelectionList.renderListBackground / renderListSeparators / renderSelection / renderItem` | 列表容器收窄为实际行宽的面板、选中与悬停高亮 |
 | `LevelLoadingScreen.renderBackground / render` | 世界加载进度改由 `LoadingView` 绘制 |
 | `Minecraft.setScreen`（26.x 为 `Gui.setScreen`） | `ScreenRouter` 替换标题与暂停画面；`setScreen(null)` 在无世界时隐式创建的标题画面也在此显式创建以便路由 |
+| `Screen.renderPanorama / renderBlurredBackground` | 自行重写了背景方法的状态界面（读取存档、加载资源、保存世界）从全景图开始画背景，在这里换成主题背景；无世界时不做模糊 |
+| `Minecraft.setScreenAndShow` | 这类界面只会被强制渲染一帧，随后游戏阻塞读盘，所以跳过入场动画，否则停在透明的第一帧 |
+| `FocusableTextWidget.renderWidget` | 状态界面里黑底描边的文字框换成主题卡片 |
+| `TabButton.renderFocusUnderline`（26.x 为 `MenuTabBar.MenuTabButton`） | 主题标签页自带选中标记，去掉原版叠在上面的白色下划线 |
 
 `skinExclusions` 中列出的界面类不会激活 `SkinContext`。
+
+GentleUI 不依赖 Fabric API。画布需要访问 `GuiGraphics` 的 `guiRenderState` 和 `scissorStack`，这两项写在自己的访问加宽器里。Fabric API 只作为开发客户端的运行时依赖，不在编译类路径上，避免它的访问加宽器掩盖缺失的条目。
 
 ## 主题系统
 
