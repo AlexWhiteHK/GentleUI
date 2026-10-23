@@ -43,6 +43,7 @@ public final class SkinContext {
 	private static float dt;
 	private static float time;
 	private static boolean pointerWasDown;
+	private static boolean showNextImmediately;
 	private static final Backdrop BACKDROP = new Backdrop();
 
 	private SkinContext() {
@@ -70,10 +71,23 @@ public final class SkinContext {
 		return true;
 	}
 
+	/**
+	 * The next screen skips its entrance transition. Used for status screens the game shows for a single forced
+	 * frame before blocking (reading world data, loading resources): a fade would leave them blank.
+	 */
+	public static void showNextImmediately() {
+		showNextImmediately = true;
+	}
+
 	public static void screenOpened(Screen s) {
 		if (s != null) {
-			OPENED.put(s, System.nanoTime());
+			if (showNextImmediately) {
+				OPENED.remove(s);
+			} else {
+				OPENED.put(s, System.nanoTime());
+			}
 		}
+		showNextImmediately = false;
 	}
 
 	private static void tick(GuiGraphics g) {
@@ -129,6 +143,11 @@ public final class SkinContext {
 
 	public static boolean active() {
 		return active;
+	}
+
+	/** True while the screen's own widgets are drawn, as opposed to its background. */
+	public static boolean inContent() {
+		return content;
 	}
 
 	public static Screen screen() {

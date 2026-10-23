@@ -81,6 +81,7 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 	private final Spring menuHintAlpha = new Spring(0f, 60f, 1f);
 	/** The canvas of the last frame, used to measure labels when a ring opens between frames. */
 	private Canvas measure;
+	private float availabilityClock;
 
 	public LiquidTitleScreen(LiquidTheme theme) {
 		super(theme);
@@ -416,6 +417,16 @@ public final class LiquidTitleScreen extends TitleScreenBase {
 			cy = MathUtil.clamp(cy, -box[1] + 10f, height - box[3] - 18f);
 			root.rootX.target(cx);
 			root.rootY.target(cy);
+		}
+		// Availability can change while a ring is open, e.g. the world list for "continue" finishes loading.
+		availabilityClock -= dt;
+		if (availabilityClock <= 0f) {
+			availabilityClock = 0.5f;
+			for (Bubble b : bubbles) {
+				if (!b.dying && b.parent != null && !b.node.isBranch()) {
+					b.available = host.available(b.node.action);
+				}
+			}
 		}
 		hovered = null;
 		Bubble best = null;

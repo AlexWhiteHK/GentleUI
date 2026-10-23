@@ -194,7 +194,7 @@ public final class LiquidSkin implements Skin {
 			c.fillRoundRect(r.x, r.y, fw, r.h, rad, paint);
 			float kx = MathUtil.clamp(r.x + r.w * value, r.x + rad, r.right() - rad);
 			c.glow(kx, r.cy(), r.h * 0.9f, Argb.withAlpha(lp.accent, 0.18f + 0.2f * s.hover));
-			c.fillRoundRect(kx - 1.5f, r.y + 4f, 3f, r.h - 8f, 1.5f, Argb.withAlpha(lp.rim, 0.75f + 0.25f * s.hover));
+			Skin.sliderKnob(c, r, kx, 3f, Argb.withAlpha(lp.rim, 0.75f + 0.25f * s.hover));
 		}
 		c.strokeRoundRect(r.x, r.y, r.w, r.h, rad, c.pixel() * 1.5f, Argb.withAlpha(lp.rim, (lp.light ? 0.5f : 0.14f) + 0.24f * s.hover));
 	}

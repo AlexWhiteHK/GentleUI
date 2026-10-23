@@ -44,6 +44,7 @@ public final class LayoutEditorScreen extends UiScreen {
 	private final WidgetRoot ui = new WidgetRoot();
 	private final Rect toolbar = new Rect();
 	private final Rect panel = new Rect();
+	private final Rect hintRect = new Rect();
 	private TitleElement selected;
 	private String selectedId;
 	private TitleElement hovered;
@@ -348,10 +349,37 @@ public final class LayoutEditorScreen extends UiScreen {
 			theme.skin().panel(c, panel, PanelStyle.CARD);
 			c.text(c.ellipsize(selected.displayName(host), panel.w - 12f, 1f), panel.x + 8f, panel.y + 6f, p.text, 1f, Align.LEFT, false);
 		} else {
-			String hint = host.tr("gentleui.editor.hint");
-			c.text(hint, width * 0.5f, toolbarBottom ? 40f : height - 14f, Argb.withAlpha(p.textMuted, 0.9f), 1f, Align.CENTER, false);
+			drawHint(c, Argb.withAlpha(p.textMuted, 0.9f));
 		}
 		ui.render(c, theme, host, mouseX, mouseY, dt, time);
+	}
+
+	/** The usage hint goes along the bottom edge, or under the toolbar when that would cover an element. */
+	private void drawHint(Canvas c, int color) {
+		String hint = host.tr("gentleui.editor.hint");
+		float w = c.textWidth(hint) + 16f;
+		float h = c.fontHeight() + 8f;
+		float bottomY = toolbarBottom ? toolbar.y - h - 6f : height - h - 8f;
+		float topY = toolbarBottom ? 8f : toolbar.bottom() + 6f;
+		hintRect.set(width * 0.5f - w * 0.5f, bottomY, w, h);
+		if (coversElement(hintRect)) {
+			hintRect.y = topY;
+			if (coversElement(hintRect)) {
+				hintRect.y = bottomY;
+			}
+		}
+		Themes.active().skin().panel(c, hintRect, PanelStyle.POPOVER);
+		c.text(hint, width * 0.5f, hintRect.y + 4f, color, 1f, Align.CENTER, false);
+	}
+
+	private boolean coversElement(Rect r) {
+		for (TitleElement e : preview.elements()) {
+			Rect b = e.bounds;
+			if (b.x < r.right() && r.x < b.right() && b.y < r.bottom() && r.y < b.bottom()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// ----------------------------------------------------------------------------------------------------------

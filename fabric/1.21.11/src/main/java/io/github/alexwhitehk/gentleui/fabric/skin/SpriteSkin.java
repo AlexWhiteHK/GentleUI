@@ -2,6 +2,7 @@ package io.github.alexwhitehk.gentleui.fabric.skin;
 
 import io.github.alexwhitehk.gentleui.core.math.MathUtil;
 import io.github.alexwhitehk.gentleui.core.math.Rect;
+import io.github.alexwhitehk.gentleui.core.render.Icon;
 import io.github.alexwhitehk.gentleui.core.theme.ButtonStyle;
 import io.github.alexwhitehk.gentleui.core.theme.PanelStyle;
 import io.github.alexwhitehk.gentleui.core.theme.Skin;
@@ -32,6 +33,7 @@ public final class SpriteSkin {
 		PANEL,
 		TOOLTIP,
 		TOOLTIP_FRAME,
+		LOCK,
 		LIST_ROW
 	}
 
@@ -60,6 +62,13 @@ public final class SpriteSkin {
 		put("widget/tab_selected_highlighted", Kind.TAB, true, false, true);
 		put("widget/scroller", Kind.SCROLLER, false, false, false);
 		put("widget/scroller_background", Kind.SCROLLER_BG, false, false, false);
+		// The difficulty lock is a single sprite with the padlock baked in; "selected" means locked.
+		put("widget/locked_button", Kind.LOCK, false, false, true);
+		put("widget/locked_button_highlighted", Kind.LOCK, true, false, true);
+		put("widget/locked_button_disabled", Kind.LOCK, false, true, true);
+		put("widget/unlocked_button", Kind.LOCK, false, false, false);
+		put("widget/unlocked_button_highlighted", Kind.LOCK, true, false, false);
+		put("widget/unlocked_button_disabled", Kind.LOCK, false, true, false);
 		put("popup/background", Kind.POPUP, false, false, false);
 		put("social_interactions/background", Kind.PANEL, false, false, false);
 		put("tooltip/background", Kind.TOOLTIP, false, false, false);
@@ -197,6 +206,15 @@ public final class SpriteSkin {
 				THUMB.set(x + w * 0.5f - 1.5f, y + 1f, 3f, h - 2f);
 				Rect track = scrollerFrame == SkinContext.frame() ? scrollerTrack : RECT;
 				draw(g, alpha, c -> skin.scrollbar(c, track, THUMB, STATE));
+			}
+			case LOCK -> {
+				Anim a = anim(m.kind, x, y, w, h, !m.disabled && (pointer || m.highlighted) ? 1f : 0f, m.highlighted && !pointer ? 1f : 0f, 0f);
+				STATE.set(a.hover, 0f, a.focus, 0f, !m.disabled);
+				Icon icon = m.selected ? Icon.LOCK : Icon.UNLOCK;
+				draw(g, alpha, c -> {
+					skin.button(c, RECT, ButtonStyle.TONAL, STATE);
+					icon.draw(c, RECT.cx(), RECT.cy(), Math.min(w, h) * 0.55f, skin.iconColor(ButtonStyle.TONAL, STATE), 2.2f);
+				});
 			}
 			case POPUP -> draw(g, alpha, c -> skin.panel(c, RECT, PanelStyle.POPOVER));
 			case PANEL -> draw(g, alpha, c -> skin.panel(c, RECT, PanelStyle.CARD));

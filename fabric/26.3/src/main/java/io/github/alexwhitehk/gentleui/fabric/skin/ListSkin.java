@@ -29,6 +29,16 @@ public final class ListSkin {
 		c.end();
 	}
 
+	/** A message box, such as the black text panel of status screens. */
+	public static void card(GuiGraphicsExtractor g, int x, int y, int w, int h, float alpha) {
+		RECT.set(x, y, w, h);
+		McCanvas c = McCanvas.begin(g);
+		c.pushAlpha(SkinContext.contentAlpha() * alpha);
+		SkinContext.theme().skin().panel(c, RECT, io.github.alexwhitehk.gentleui.core.theme.PanelStyle.CARD);
+		c.popAlpha();
+		c.end();
+	}
+
 	public static void hover(GuiGraphicsExtractor g, int x, int y, int w, int h, boolean hovered) {
 		float strength = SpriteSkin.rowHover(x, y, w, h, hovered);
 		if (strength < 0.01f) {

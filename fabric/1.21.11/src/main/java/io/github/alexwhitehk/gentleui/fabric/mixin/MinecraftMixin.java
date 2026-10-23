@@ -35,4 +35,10 @@ public abstract class MinecraftMixin {
 	private void gentleui$opened(Screen ignored, CallbackInfo ci) {
 		SkinContext.screenOpened(this.screen);
 	}
+
+	/** The screen gets one forced frame before the game blocks, so it must not start invisible. */
+	@Inject(method = "setScreenAndShow", at = @At("HEAD"))
+	private void gentleui$showNow(Screen screen, CallbackInfo ci) {
+		SkinContext.showNextImmediately();
+	}
 }

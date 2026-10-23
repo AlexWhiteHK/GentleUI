@@ -1,3 +1,9 @@
 accessWidener v2 official
 # Lets the selection list mixin name the protected entry type in its injector signatures.
 accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry
+# The vector canvas submits its own GUI render state elements and clips them to the current scissor. Fabric API
+# happens to widen these too, but GentleUI must not rely on it being installed.
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiRenderState Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
+accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack peek ()Lnet/minecraft/client/gui/navigation/ScreenRectangle;

@@ -60,4 +60,25 @@ public abstract class ScreenMixin {
 		this.minecraft.gui.hud.extractDeferredSubtitles();
 		ci.cancel();
 	}
+
+	/**
+	 * Status screens (reading world data, loading resources) override the background method and draw the
+	 * panorama themselves; the panorama is where their background starts, so the theme takes over here. Calls
+	 * from inside a screen's own content, like the classic title screen's, keep the panorama.
+	 */
+	@Inject(method = "extractPanorama", at = @At("HEAD"), cancellable = true)
+	private void gentleui$panorama(GuiGraphicsExtractor graphics, float partialTick, CallbackInfo ci) {
+		if (SkinContext.active() && !SkinContext.inContent()) {
+			SkinContext.drawBackground(graphics, (Screen) (Object) this);
+			ci.cancel();
+		}
+	}
+
+	/** Blur only belongs over a running world; over the theme background it would smear it. */
+	@Inject(method = "extractBlurredBackground", at = @At("HEAD"), cancellable = true)
+	private void gentleui$blur(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+		if (SkinContext.active() && this.minecraft.level == null) {
+			ci.cancel();
+		}
+	}
 }

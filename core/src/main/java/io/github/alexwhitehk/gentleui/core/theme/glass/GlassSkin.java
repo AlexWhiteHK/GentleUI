@@ -195,7 +195,7 @@ public final class GlassSkin implements Skin {
 			float fw = MathUtil.clamp(r.w * value, rad * 2f, r.w);
 			c.fillRoundRect(r.x + 1f, r.y + 1f, fw - 2f, r.h - 2f, rad - 1f, Argb.withAlpha(gp.accent, gp.light ? 0.35f : 0.28f));
 			float kx = MathUtil.clamp(r.x + r.w * value, r.x + rad, r.right() - rad);
-			c.fillRoundRect(kx - 2f, r.y + 3f, 4f, r.h - 6f, 2f, 0xFFFFFFFF);
+			Skin.sliderKnob(c, r, kx, 3f, 0xFFFFFFFF);
 		}
 	}
 

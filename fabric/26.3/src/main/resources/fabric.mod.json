@@ -4,9 +4,11 @@
 	"version": "${version}",
 	"name": "GentleUI",
 	"description": "A modern, animated interface for Minecraft's menus. Three themes: Liquid (default), Material and Glass.",
-	"authors": ["AlexWhiteHK"],
+	"authors": ["AlexWhite"],
 	"contact": {
-		"sources": "https://github.com/AlexWhiteHK/GentleUI"
+		"homepage": "https://github.com/AlexWhiteHK/GentleUI",
+		"sources": "https://github.com/AlexWhiteHK/GentleUI",
+		"issues": "https://github.com/AlexWhiteHK/GentleUI/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/gentleui/icon.png",

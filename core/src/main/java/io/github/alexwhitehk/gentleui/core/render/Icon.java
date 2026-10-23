@@ -516,6 +516,22 @@ public final class Icon {
 		i.line(15, 6, 15, 18);
 	});
 
+	public static final Icon LOCK = make("lock", i -> {
+		i.s().roundRect(5, 11, 14, 10, 2.5f);
+		i.arc(12, 8, 4, -180, 0);
+		i.line(8, 8, 8, 11);
+		i.line(16, 8, 16, 11);
+		i.dot(12, 16, 1.4f);
+	});
+
+	public static final Icon UNLOCK = make("unlock", i -> {
+		i.s().roundRect(5, 11, 14, 10, 2.5f);
+		i.arc(12, 6.5f, 4, -180, 0);
+		i.line(8, 6.5f, 8, 8.5f);
+		i.line(16, 6.5f, 16, 11);
+		i.dot(12, 16, 1.4f);
+	});
+
 	private static void appendArc(Path p, float cx, float cy, float r, float a0, float a1) {
 		int n = Math.max(6, MathUtil.ceilToInt(Math.abs(a1 - a0) / MathUtil.TAU * 40f));
 		for (int k = 1; k <= n; k++) {

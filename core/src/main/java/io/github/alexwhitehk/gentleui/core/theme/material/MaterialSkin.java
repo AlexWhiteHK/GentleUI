@@ -196,7 +196,7 @@ public final class MaterialSkin implements Skin {
 			float fw = MathUtil.clamp(r.w * value, rad * 2f, r.w);
 			c.fillRoundRect(r.x, r.y, fw, r.h, rad, p.accentContainer);
 			float hx = MathUtil.clamp(r.x + r.w * value, r.x + rad, r.right() - rad);
-			c.fillRoundRect(hx - 2f, r.y + 3f, 4f, r.h - 6f, 2f, p.accent);
+			Skin.sliderKnob(c, r, hx, 3f, p.accent);
 		}
 		c.fillRoundRect(r.x, r.y, r.w, r.h, rad, stateLayer(p.text, s));
 	}

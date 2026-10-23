@@ -26,6 +26,18 @@ public interface Skin {
 		return buttonText(style, s);
 	}
 
+	/**
+	 * Position marker for {@link #sliderContainer}: two short ticks on the top and bottom edge. Vanilla prints the
+	 * slider label across the middle, and a full-height knob would hide the glyph under it.
+	 */
+	static void sliderKnob(Canvas c, Rect r, float x, float width, int color) {
+		// One line of vanilla text is 9 units tall and vertically centered.
+		float tick = Math.max(1.5f, (r.h - 9f) * 0.5f - 2f);
+		float half = width * 0.5f;
+		c.fillRoundRect(x - half, r.y + 2f, width, tick, half, color);
+		c.fillRoundRect(x - half, r.bottom() - 2f - tick, width, tick, half, color);
+	}
+
 	void toggle(Canvas c, Rect r, WidgetState s);
 
 	void checkbox(Canvas c, Rect r, WidgetState s);

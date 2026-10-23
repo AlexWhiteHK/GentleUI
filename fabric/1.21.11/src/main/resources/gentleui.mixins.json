@@ -6,13 +6,15 @@
 	"client": [
 		"AbstractScrollAreaAccessor",
 		"AbstractSelectionListMixin",
+		"FocusableTextWidgetMixin",
 		"GuiGraphicsAccessor",
 		"GuiGraphicsMixin",
 		"GuiRenderStateMixin",
 		"GuiTextRenderStateAccessor",
 		"LevelLoadingScreenMixin",
 		"MinecraftMixin",
-		"ScreenMixin"
+		"ScreenMixin",
+		"TabButtonMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
