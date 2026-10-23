@@ -26,8 +26,8 @@ loom {
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	// Runtime only: GentleUI does not use Fabric API, and keeping it off the compile classpath stops its access
-	// wideners from hiding a missing entry in ours. It stays in the dev client to test alongside it.
+	// Runtime only: GentleUI calls no Fabric API code but needs it to load its language files. Keeping it off the
+	// compile classpath stops its access wideners from hiding a missing entry in ours.
 	runtimeOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	implementation project(':core')

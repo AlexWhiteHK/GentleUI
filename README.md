@@ -86,9 +86,11 @@ GentleUI 改的是按钮、滑块、输入框、标签页、滚动列表这些�
 | 1.21.11 | 0.19.3 或更新 | 21 或更新 |
 | 26.3 | 0.19.5 或更新 | 25 或更新 |
 
-把对应版本的 jar 放进 `.minecraft/mods` 就行。不需要 Fabric API。装了 Mod Menu 的话，可以从模组列表打开 GentleUI 的设置，菜单里的"模组"入口也会可用。
+1. 装好 Fabric Loader 和对应版本的 [Fabric API](https://modrinth.com/mod/fabric-api)。
+2. 到 [Releases](https://github.com/AlexWhiteHK/GentleUI/releases) 下载和游戏版本对应的 jar：`gentleui-fabric-1.21.11-*.jar` 或 `gentleui-fabric-26.3-*.jar`。
+3. 放进 `.minecraft/mods`，启动游戏。
 
-目前还没有发布页，jar 需要自己构建，方法见文末。
+Mod Menu 是可选的。装了它，可以从模组列表打开 GentleUI 的设置，菜单里的"模组"入口也会可用。
 
 ## Liquid 怎么操作
 

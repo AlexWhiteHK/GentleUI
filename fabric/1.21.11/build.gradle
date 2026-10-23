@@ -39,8 +39,8 @@ dependencies {
 	// which keeps this adapter source-compatible with future Minecraft lines.
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	// Runtime only: GentleUI does not use Fabric API, and keeping it off the compile classpath stops its access
-	// wideners from hiding a missing entry in ours. Mod Menu needs it in the dev client.
+	// Runtime only: GentleUI calls no Fabric API code but needs it to load its language files. Keeping it off the
+	// compile classpath stops its access wideners from hiding a missing entry in ours.
 	modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	// Optional integration: a "configure" button in Mod Menu. Present at runtime only in development.

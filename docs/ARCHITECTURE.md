@@ -51,7 +51,9 @@
 
 `skinExclusions` 中列出的界面类不会激活 `SkinContext`。
 
-GentleUI 不依赖 Fabric API。画布需要访问 `GuiGraphics` 的 `guiRenderState` 和 `scissorStack`，这两项写在自己的访问加宽器里。Fabric API 只作为开发客户端的运行时依赖，不在编译类路径上，避免它的访问加宽器掩盖缺失的条目。
+GentleUI 不调用 Fabric API 的代码，但要靠它在正式环境里加载模组自带的语言文件（原版资源管理器只读取游戏本体），所以 `fabric.mod.json` 把它列为依赖。画布需要访问 `GuiGraphics` 的 `guiRenderState` 和 `scissorStack`，这两项写在自己的访问加宽器里，不借用 Fabric API 的。Fabric API 只放在开发客户端的运行时类路径上，不参与编译，避免它的访问加宽器掩盖缺失的条目。
+
+开发客户端会把 `core` 的资源直接放在类路径上，所以语言文件在开发环境里总能读到，正式环境的问题在这里看不出来。发布前应该用 Loom 的 `ClientProductionRunTask` 拿构建出来的 jar 跑一次正式环境。
 
 ## 主题系统
 
